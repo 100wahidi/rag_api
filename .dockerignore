@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+env/
+.env
+.git
+.gitignore
+build/
+dist/
+*.egg-info
+*.sqlite3
+app.log
+__pycache__
+.DS_Store

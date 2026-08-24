@@ -1,0 +1,15 @@
+{
+  "name": "api_oauth",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\"><b>Hi , I'm MOUAD, this is my new Project it is a CV generator </b><img src=\"https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif\" width=\"35\"></h1>",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "supabase": "^2.110.0-beta.39"
+  }
+}
