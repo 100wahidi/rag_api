@@ -12,10 +12,10 @@ from Schemas.shema import Token, UserSIDB, AliceData
 from Secrets.variables import Settings
 from sqlmodel import select
 from authentication.auth import (ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, get_password_hash, verify_password, get_current_user,)
-from database.tables import Alice, documents
+from database.tables import Alice, experience, project, documents
 from database.utils import make_engine, make_sessionmaker
 from sentence_transformers import SentenceTransformer
-from Services.generation.schemas import ExperienceItem, RAGGenerationPayload
+from Services.generation.schemas import ExperienceItem, ProjectItem, RAGGenerationPayload
 from Services.retrieval.retrieval_service import RetrievalService
 from Services.extraction.extraction_service import ExtractionService
 from Services.generation.generation_service import GenerationService
@@ -123,15 +123,20 @@ async def login_for_access_token(
     return Token(access_token=token, token_type="bearer")
  
 
-@app.post("/register_user_metadata")
-async def register(metadata :AliceData,  session :Annotated[AsyncSession, Depends(get_db)], username: str = Depends(get_current_user)):
-    user_db = await session.execute(select(Alice.user_id).where(Alice.name == username))
-    user_id = user_db.scalar_one_or_none()
-    user_metadata = documents(title=metadata.name, content=metadata.experiences, embedding=None, created_at=None, user_id=user_id)
-    session.add(user_metadata)    
+@app.post("/add_experience")
+async def register(user_experience :ExperienceItem,  session :Annotated[AsyncSession, Depends(get_db)], username: str = Depends(get_current_user)):
+    experience = experience(title=user_experience.title, content=user_experience.content, embedding=None, created_at=None, user_id=user_id)
+    session.add(experience)    
     await session.commit()
-    await session.refresh(user_metadata)
-    return user_metadata
+    await session.refresh(experience)
+
+
+@app.post("/add_project")
+async def register(user_project :ProjectItem,  session :Annotated[AsyncSession, Depends(get_db)], username: str = Depends(get_current_user)):
+    project = project(title=user_project.title, content=user_project.content, embedding=None, created_at=None, user_id=user_id)
+    session.add(project)    
+    await session.commit()
+    await session.refresh(project)
              
       
 @app.post("/rag/extraction")

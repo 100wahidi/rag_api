@@ -17,14 +17,19 @@ class Alice(SQLModel, table=True):
 
 
 
-class MetaData(SQLModel, table=True):
+class experience(SQLModel, table=True):
     user_id: uuid.UUID = Field(primary_key=True)
-    name: Optional[str] = None
-    profiles: Optional[str] = None
-    experiences: Optional[str] = None
-    skills: Optional[str] = None
-    languages: Optional[str] = None
-    education: Optional[str] = None
+    title: Optional[str] = None
+    content: Optional[str] = None
+    user_id: uuid.UUID = Field(default_factory=uuid.uuid4, foreign_key="alice.user_id")
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+
+class project(SQLModel, table=True):
+    user_id: uuid.UUID = Field(primary_key=True)
+    title: Optional[str] = None
+    content: Optional[str] = None
+    user_id: uuid.UUID = Field(default_factory=uuid.uuid4, foreign_key="alice.user_id")
+    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
 class documents(SQLModel, table=True):
     id: int = Field(primary_key=True)

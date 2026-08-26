@@ -5,13 +5,12 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
 import postgres from 'https://deno.land/x/postgresjs@v3.4.5/mod.js'
 // We'll use the OpenAI API to generate embeddings
 import { z } from 'npm:zod'
-
 // Initialize OpenAI client
 
 // Initialize Postgres client
 const sql = postgres(
   // `SUPABASE_DB_URL` is a built-in environment variable
-  Deno.env.get('DB_URL')!
+  Deno.env.get('PG_DB_URL')!
 )
 
 const jobSchema = z.object({
