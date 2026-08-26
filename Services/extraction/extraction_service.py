@@ -40,6 +40,5 @@ class ExtractionService:
             return result
 
         except (SyntaxError, ValueError) as e:
-            print(f"Error: {e}")
             return None
         

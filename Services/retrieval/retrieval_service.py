@@ -1,7 +1,6 @@
 import asyncio
 from sqlalchemy import  text
 import numpy as np
-from sentence_transformers import SentenceTransformer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -17,8 +16,9 @@ class RetrievalService:
         self.model = model
         self.target = target
 
-    async def customise_query(self, username: str, retrieval_vector: list[float]):
-        statement = f"""
+    
+    async def retrieve(self, username: str, session: AsyncSession, retrieval_vector: list[float]):
+        statement = text(f"""
                     select A.title,content, 1-(A.embedding <=> '{retrieval_vector}') as similarity
                     FROM "{self.target}" AS A
                     LEFT JOIN alice AS C
@@ -27,12 +27,8 @@ class RetrievalService:
                     AND 1-(A.embedding <=> '{retrieval_vector}') > 0
                     order by 1-(A.embedding <=> '{retrieval_vector}') desc
                     limit 3
-                """
-        return statement
-    
-    async def retrieve(self, username: str, session: AsyncSession, retrieval_vector: list[float]):
-        statement = await self.customise_query(username, retrieval_vector)
-        experiences_task = await session.execute(text(statement))
+                """)    
+        experiences_task = await session.execute(statement, {"retrieval_vector": retrieval_vector, "username": username})
         best_experiences = experiences_task.fetchall()
         json_results = [
             {

@@ -6,6 +6,13 @@ from pydantic import BaseModel, Field
 # 1. INPUT DATA SCHEMAS (RAG Retrieval)
 # ==========================================
 
+class UserProfile(BaseModel):
+    name: str = Field(..., description="Candidate full name")
+    education: Optional[str] = Field(None, description="Candidate's highest degree or field of study")
+    number: Optional[int] = Field(None, description="Candidate's phone number")
+    address: Optional[str] = Field(None, description="Candidate's city and country")
+    email_address: Optional[str] = Field(None, description="Candidate's contact email")
+
 class OfferExtraction(BaseModel):
     title: str = Field(..., description="Target job position title")
     technical_skills: List[str] = Field(default_factory=list, description="Extracted hard technical skills")
@@ -16,11 +23,8 @@ class OfferExtraction(BaseModel):
 
 
 class ExperienceItem(BaseModel):
-    company: str
-    role: str
-    period: str
-    location: str
-    description: List[str] = Field(default_factory=list, description="Bullet points of tasks and achievements")
+    title: str
+    description: str
 
 
 class RetrievedExperiences(BaseModel):
@@ -29,8 +33,7 @@ class RetrievedExperiences(BaseModel):
 
 class ProjectItem(BaseModel):
     title: str
-    technologies: List[str] = Field(default_factory=list)
-    description: List[str] = Field(default_factory=list, description="Key features, architecture, and impact")
+    description: str = Field(default_factory=list, description="Key features, architecture, and impact")
 
 
 class RetrievedProjects(BaseModel):

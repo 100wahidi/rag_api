@@ -1,21 +1,23 @@
 from pydantic import BaseModel
+from typing import Optional
+import uuid
 
 
 class Token(BaseModel):
     access_token: str
-    token_type: str="bear token"
+    token_type: str = "bearer"
 
 
 class TokenData(BaseModel):
-    username: str | None = None
+    username: Optional[str] = None
 
 
 class User(BaseModel):
     # id:int  should be insereted in SQLModel database for users storing 
     username: str
-    email: str | None = None
-    role: str | None = None
-    disabled: bool | None = None
+    email: Optional[str] = None
+    role: Optional[str] = None
+    disabled: Optional[bool] = None
 
 
 class UserInDB(User):
@@ -23,23 +25,47 @@ class UserInDB(User):
 
 
 class UserSIDB(BaseModel):
-    name: str | None = None
-    password: str | None = None
-    Education: str | None = None
-    number: str | None = None
-    address: str | None = None
-    email_address: str | None = None
+    name: Optional[str] = None
+    password: Optional[str] = None
+    Education: Optional[str] = None
+    number: Optional[int] = None
+    address: Optional[str] = None
+    email_address: Optional[str] = None
+
 
 class UserLIDB(BaseModel):
-    name: str | None = None
-    password: str | None = None
+    name: Optional[str] = None
+    password: Optional[str] = None
+
 
 class AliceData(BaseModel):
-    name:str | None 
-    profiles:str | None 
-    experiences:str | None 
-    skills:str | None
-    languages:str | None 
-    education:str | None
+    name: Optional[str] = None
+    profiles: Optional[str] = None
+    experiences: Optional[str] = None
+    skills: Optional[str] = None
+    languages: Optional[str] = None
+    education: Optional[str] = None
+
+
+# Response and DB schemas for users
+class UserDB(BaseModel):
+    user_id: uuid.UUID
+    name: Optional[str]
+    hashed_password: Optional[str]
+    phone_number: Optional[str]
+    diplomas: Optional[str]
+    email: Optional[str]
+
+    model_config = {"from_attributes": True}
+
+
+class UserRead(BaseModel):
+    user_id: uuid.UUID
+    name: Optional[str]
+    phone_number: Optional[str]
+    diplomas: Optional[str]
+    email: Optional[str]
+
+    model_config = {"from_attributes": True}
 
 

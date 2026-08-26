@@ -1,7 +1,7 @@
 import re
 from typing import Any
 from jinja2 import Environment, BaseLoader
-from Services.generation.pdf_compiler import GeneratedCVData
+from Services.generation.schemas import GeneratedCV
 
 LATEX_ESCAPE_RULES = {
     '&': r'\&',
@@ -133,7 +133,7 @@ class LaTeXRenderer:
         )
         self.template = self.env.from_string(LATEX_CV_TEMPLATE)
 
-    def render(self, data: GeneratedCVData) -> str:
+    def render(self, data: GeneratedCV) -> str:
         # Dump model to dict and sanitize all string values recursively
         raw_dict = data.model_dump()
         escaped_dict = escape_latex(raw_dict)

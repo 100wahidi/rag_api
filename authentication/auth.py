@@ -9,7 +9,7 @@ from Schemas.shema import User
 from Secrets.variables import Settings
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
-from database.SQLModel import Alice
+from database.tables import Alice
 
 
 settings = Settings()
