@@ -22,4 +22,4 @@ RUN uv pip install --system --no-cache -r pyproject.toml
 COPY . .
 
 # Run uvicorn dynamically binding to Railway's $PORT (default to 8000 locally)
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 2"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]
