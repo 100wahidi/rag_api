@@ -1,6 +1,7 @@
 import json
 import logging
 from typing import Optional
+from xml.parsers.expat import model
 from mistralai.client import Mistral
 from sqlalchemy.ext.asyncio import AsyncSession
 from .schema import GeneratedCV, RetrievedExperiences, RetrievedProjects, OfferExtraction, UserProfile
@@ -16,13 +17,13 @@ logger = logging.getLogger(__name__)
 class GenerationService:
     def __init__(
         self,
-        api_key: str,
-        model: str = "mistral-large-latest",
+        Client: Mistral,
+        model: str ,
         renderer: Optional[LaTeXRenderer] = None,
     ):
-        self.client = Mistral(api_key=api_key)
-        self.model = model
         self.renderer = renderer or LaTeXRenderer()
+        self.client = Client
+        self.model = model
 
     async def generate_cv(
         self,
@@ -89,7 +90,6 @@ class GenerationService:
             return structured_data, latex_source
 
         except Exception as err:
-            logger.error(f"Failed to generate structured CV: {str(err)}", exc_info=True)
             raise RuntimeError(f"CV Generation Pipeline Error: {err}") from err
 
     def _assemble_prompt(

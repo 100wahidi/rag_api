@@ -2,8 +2,6 @@ from typing import List
 from pydantic import BaseModel, Field
 
 
-
-
 class ExperienceItem(BaseModel):
     title: str
     content: str

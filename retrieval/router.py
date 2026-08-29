@@ -14,7 +14,6 @@ logger = setup_logger(__name__)
 router = APIRouter(prefix="/rag", tags=["retrival augmented generation"])
 
 
-    
 # Embedding function to get embeddings 
 async def embed_text(request: Request, text: str) -> list[float]:
     loop = asyncio.get_running_loop()

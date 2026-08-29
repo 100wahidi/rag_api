@@ -14,6 +14,7 @@ from extraction.router import router as extraction_router
 from retrieval.router import router as retrieval_router
 from generation.router import router as generation_router
 from uploading.router import router as uploading_router
+from core.llm import Llm
 
 
 
@@ -40,7 +41,7 @@ async def lifespan(app: FastAPI):
     )
 
     # initialize the generation service with Mistral API key and model(to enhence availability)
-    app.state.generation_model = GenerationService(api_key=settings.MISTRAL_API_KEY, model="mistral-large-latest")
+    app.state.generation_model = Llm(api_key=settings.MISTRAL_API_KEY)
 
     yield
     # shutdown[end_event]: dispose engine, stop executor, close async clients and any other resources

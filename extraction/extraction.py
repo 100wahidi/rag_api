@@ -2,28 +2,46 @@ import ast
 from .models import ExractionItem
 from mistralai.client import Mistral
 from core.prompts import PARSE_QUESTION_SYSTEM_PROMPT, PARSE_QUESTION_USER_TEMPLATE
+from core.logs import setup_logger
 
+logger = setup_logger(__name__)
 
 class ExtractionService:
     def __init__(self, api_key: str):
-        self.model:str = "mistral-large-latest"
         self.MISTRAL_API_KEY:str = api_key
 
-
-    def extract(self, text: str, system_prompt: str = PARSE_QUESTION_SYSTEM_PROMPT,user_template: str = PARSE_QUESTION_USER_TEMPLATE): 
+    def extract(
+                self, text: str,
+                system_prompt: str = PARSE_QUESTION_SYSTEM_PROMPT,
+                user_template: str = PARSE_QUESTION_USER_TEMPLATE
+                ): 
+    
         user_msg = user_template.format(question=text)
         Client = Mistral(api_key=self.MISTRAL_API_KEY)
-        extracted = Client.chat.parse(
-                model=self.model,
-                messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_msg},
-                ],
-                response_format=ExractionItem, # Pydantic model
-                )
-        extracted_dict = self.extract_dict_from_string(extracted.choices[0].message.content)
 
-        return extracted_dict
+        if not Client:
+            raise ValueError("Client is not served. Please provide a valid API key.")
+        else:
+            logger.info("Client is served. Proceeding with extraction.")
+            try:
+                extracted = Client.chat.parse(
+                        model="ministral-8b-latest",
+                        # LLM Provider Class as an after test ticket 
+                        messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_msg},
+                        ],
+                        response_format=ExractionItem, # Pydantic model
+                        )
+                
+            except Exception as e:
+                logger.error("Error during extraction: %s", e)
+                raise ValueError(f"Extraction failed: {e}")
+            
+            logger.info("Extraction results: %s", extracted.choices[0].message.content)
+            extracted_dict = self.extract_dict_from_string(extracted.choices[0].message.content)
+
+            return extracted_dict
 
 
     def extract_dict_from_string(self, extraction_string: str):
