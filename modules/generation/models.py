@@ -12,3 +12,6 @@ class Alice(SQLModel, table=True):
     email_adress: Optional[str] = None
     Education: Optional[str] = None
     adress: Optional[str] = None
+    
+    __table_args__ = {"extend_existing": True} # < new
+

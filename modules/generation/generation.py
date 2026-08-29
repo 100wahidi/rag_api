@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .schema import GeneratedCV, RetrievedExperiences, RetrievedProjects, OfferExtraction, UserProfile
 from sqlmodel import select
 from .models import Alice
-from .latex_renderer import LaTeXRenderer
-from  core.prompts import SYSTEM_PROMPT
+from modules.generation.latex_renderer import LaTeXRenderer
+from  modules.core.prompts import SYSTEM_PROMPT
 
 logger = logging.getLogger(__name__)
 

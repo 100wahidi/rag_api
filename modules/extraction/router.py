@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 from fastapi import Depends, HTTPException
-from authentication.service import get_current_user
-from .extraction import ExtractionService
-from core.security import Settings
-from core.logs import setup_logger
+from modules.authentication.service import get_current_user
+from modules.extraction.extraction import ExtractionService
+from modules.core.security import Settings
+from modules.core.logs import setup_logger
 
 logger = setup_logger(__name__)
 settings = Settings()

@@ -2,12 +2,12 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select, insert
-from core.dependencies import get_db
-from authentication.service import get_current_user
+from modules.core.dependencies import get_db
+from modules.authentication.service import get_current_user
 from .schema import RetrievedProjects, RetrievedExperiences
 from .models import Alice, experience, project
 from typing import Annotated
-from core.logs import setup_logger
+from modules.core.logs import setup_logger
 
 logger = setup_logger(__name__)
 

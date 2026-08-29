@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Request
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from core.dependencies import get_db
-from authentication.service import get_current_user
+from modules.core.dependencies import get_db
+from modules.authentication.service import get_current_user
 from .generation import GenerationService
 from .schema import RAGGenerationPayload
 from typing import Annotated
-from core.logs import setup_logger
+from modules.core.logs import setup_logger
 
 logger = setup_logger(__name__)
 

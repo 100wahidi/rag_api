@@ -4,8 +4,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from .models import Alice
-from core.dependencies import get_db
-from authentication.service import (ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, get_password_hash, verify_password)
+from modules.core.dependencies import get_db
+from modules.authentication.service import (ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token, get_password_hash, verify_password)
 from .schema import UserSIDB, Token
 from typing import Annotated
 from datetime import timedelta

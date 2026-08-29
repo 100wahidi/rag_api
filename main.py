@@ -4,17 +4,16 @@ from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from core.security import Settings
-from core.logs import setup_logger
 from sentence_transformers import SentenceTransformer
-from core.dependencies import make_engine, make_sessionmaker
-from generation.generation import GenerationService
-from authentication.router import router as auth_router
-from extraction.router import router as extraction_router
-from retrieval.router import router as retrieval_router
-from generation.router import router as generation_router
-from uploading.router import router as uploading_router
-from core.llm import Llm
+from modules.core.logs import setup_logger
+from modules.core.security import Settings
+from modules.core.llm import Llm
+from modules.core.dependencies import make_engine, make_sessionmaker
+from modules.authentication.router import router as auth_router
+from modules.extraction.router import router as extraction_router
+from modules.retrieval.router import router as retrieval_router
+from modules.generation.router import router as generation_router
+from modules.uploading.router import router as uploading_router
 
 
 
@@ -47,9 +46,6 @@ async def lifespan(app: FastAPI):
     # shutdown[end_event]: dispose engine, stop executor, close async clients and any other resources
     await engine.dispose()
     app.state.model_executor.shutdown(wait=True)
-
-
-
 
 
 app = FastAPI(lifespan=lifespan)

@@ -1,8 +1,8 @@
 import ast
-from .models import ExractionItem
+from modules.extraction.models import ExractionItem
 from mistralai.client import Mistral
-from core.prompts import PARSE_QUESTION_SYSTEM_PROMPT, PARSE_QUESTION_USER_TEMPLATE
-from core.logs import setup_logger
+from modules.core.prompts import PARSE_QUESTION_SYSTEM_PROMPT, PARSE_QUESTION_USER_TEMPLATE
+from modules.core.logs import setup_logger
 
 logger = setup_logger(__name__)
 

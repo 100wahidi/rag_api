@@ -3,7 +3,7 @@ from fastapi import Depends, HTTPException, status
 from pwdlib import PasswordHash
 from pwdlib.hashers.argon2 import Argon2Hasher
 import jwt
-from core.security import Settings
+from modules.core.security import Settings
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 from typing import Annotated
