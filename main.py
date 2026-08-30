@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
 
     # calling the model loading in a separate thread to avoid blocking the event loop 
     def _load_embedding_model():
-        return SentenceTransformer("thenlper/gte-small")
+        return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
     app.state.embedding_model = await asyncio.get_running_loop().run_in_executor(
         app.state.model_executor, _load_embedding_model
     )

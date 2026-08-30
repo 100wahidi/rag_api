@@ -32,7 +32,7 @@ async def retrieve_metadata(exctaction :dict, request: Request, session: Annotat
                  logger.exception("Embedding service failure")
                  raise HTTPException(status_code=503,detail="Embedding service unavailable")
                 
-            best_experiences = await RetrievalService(model="thenlper/gte-small",target="experience").retrieve(username,session, experience_vector)
+            best_experiences = await RetrievalService(target="experience").retrieve(username,session, experience_vector)
             return {"username": username, "best_experiences": [ExperienceItem(**exp) for exp in best_experiences]}
 
 
@@ -45,5 +45,5 @@ async def retrieve_projects(exctaction :dict, request: Request, session: Annotat
                  logger.exception("Embedding service failure")
                  raise HTTPException(status_code=503,detail="Embedding service unavailable")
                 
-            best_projects = await RetrievalService(model="thenlper/gte-small",target="project").retrieve(username,session, project_vector)
+            best_projects = await RetrievalService(target="project").retrieve(username,session, project_vector)
             return {"username": username, "best_projects": best_projects}

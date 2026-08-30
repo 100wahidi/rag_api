@@ -21,6 +21,7 @@ class Llm:
         client = self.get_llm_client()
         models = [row.id for row in client.models.list().data]
         return models
+    
     def handlel_llm(self):
         available_models = self.get_avalable_models()
         if self.model not in available_models:
