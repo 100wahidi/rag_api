@@ -12,9 +12,11 @@ from modules.core.security import Settings
 
 
 class InjectionService:
-
+    def __init__(self, llm_client: Llm):
+        self.llm_client = llm_client
+    # standardizing llm mistralling initialization for different operations
     @staticmethod
-    def extract_text_from_pdf(file_bytes: bytes) -> str:
+    async def extract_text_from_pdf(file_bytes: bytes) -> str:
         """Extracts plain text from raw PDF bytes."""
         reader = PdfReader(io.BytesIO(file_bytes))
         full_text = []
@@ -24,10 +26,9 @@ class InjectionService:
                 full_text.append(extracted)
         return "\n".join(full_text).strip()
 
-    @classmethod
-    def extract_entities_with_llm(cls, cv_text: str) -> ExtractionLLMResponse:
+    async def extract_entities_with_llm(self, cv_text: str) -> ExtractionLLMResponse:
         """Invokes LLM with strict JSON schema instructions to extract experiences and projects."""
-        client = Llm(Settings().MISTRAL_API_KEY)
+        client = self.llm_client
 
         system_prompt = (
             "You are an expert ATS document parser. Extract all professional experiences and projects "

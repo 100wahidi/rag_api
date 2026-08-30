@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, BackgroundTasks, status
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, BackgroundTasks, status
 from sqlalchemy.orm import Session
 from sqlmodel import select
 from modules.core.database import Alice
@@ -17,6 +17,7 @@ router = APIRouter(prefix="/extraction", tags=["Extraction & Ingestion"])
 
 @router.post("/process-cv", response_model=ExtractionResponse, status_code=status.HTTP_200_OK)
 async def process_cv_and_extract(
+    request: Request,
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     auto_persist: bool = True,
@@ -32,7 +33,8 @@ async def process_cv_and_extract(
     result = await session.execute(select(Alice).where(Alice.name == f'{username}'))
     user = result.scalar_one_or_none()
     file_bytes = await file.read()
-    raw_text = InjectionService.extract_text_from_pdf(file_bytes)
+    llm_client = request.app.state.generation_model
+    raw_text = await InjectionService(llm_client).extract_text_from_pdf(file_bytes)
 
     if not raw_text.strip():
         raise HTTPException(
@@ -41,7 +43,7 @@ async def process_cv_and_extract(
         )
 
     # 1. LLM Structured Extraction
-    extracted_data: ExtractionLLMResponse = InjectionService.extract_entities_with_llm(raw_text)
+    extracted_data: ExtractionLLMResponse = await InjectionService(llm_client).extract_entities_with_llm(raw_text)
 
     # 2. Async persistence if flag is set
     if auto_persist:
