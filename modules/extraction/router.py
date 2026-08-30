@@ -8,10 +8,11 @@ from modules.core.logs import setup_logger
 logger = setup_logger(__name__)
 settings = Settings()
 
-router = APIRouter(prefix="/rag", tags=["retrival augmented generation"])
+router = APIRouter(prefix="/extraction", tags=["retrival augmented generation"])
 
 
-@router.post("/rag/extraction")
+
+@router.post("/offer_extraction")
 async def process_offer(offer_passage: str, username: str = Depends(get_current_user)):
     try:
         text_extraction = ExtractionService(api_key=settings.MISTRAL_API_KEY).extract(offer_passage)

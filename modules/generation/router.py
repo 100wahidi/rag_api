@@ -10,13 +10,13 @@ from modules.core.logs import setup_logger
 
 logger = setup_logger(__name__)
 
-router = APIRouter(prefix="/rag", tags=["retrival augmented generation"])
+router = APIRouter(prefix="/generation", tags=["retrival augmented generation"])
 
 async def get_service(request:Request):
     generation_service = request.app.state.generation_model
     return generation_service
 
-@router.post("/rag/generation")
+@router.post("/get_cv")
 async def upload_file(
     request: Request,
     generation_payload: RAGGenerationPayload,

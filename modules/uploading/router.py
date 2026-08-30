@@ -11,7 +11,7 @@ from modules.core.logs import setup_logger
 
 logger = setup_logger(__name__)
 
-router = APIRouter(prefix="/rag", tags=["uploading projects and experiences"])
+router = APIRouter(prefix="/uploading", tags=["uploading projects and experiences"])
 
 
 @router.post("/add_project")

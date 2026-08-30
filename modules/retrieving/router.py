@@ -14,7 +14,7 @@ import asyncio
 
 logger = setup_logger(__name__)
 
-router = APIRouter(prefix="/rag", tags=["retrival augmented generation"])
+router = APIRouter(prefix="/rag/retrieval", tags=["retrival augmented generation"])
 
 
 # 1. Optimized embedding helper
@@ -33,7 +33,7 @@ async def embed_text(request: Request, text: str) -> List[float]:
 
 
 # 2. Optimized retrieval route
-@router.post("/rag/retrieval/experiences")
+@router.post("/experiences")
 async def retrieve_metadata(
     required_experiences: ExtractedExperience,
     request: Request,
@@ -78,7 +78,7 @@ async def retrieve_metadata(
 
 
 # 2. Optimized retrieval route
-@router.post("/rag/retrieval/projects")
+@router.post("/projects")
 async def retrieve_metadata(
     required_skills: ExtractedSkills,
     request: Request,
