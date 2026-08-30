@@ -6,7 +6,7 @@ from sqlmodel import select
 from modules.core.dependencies import get_db
 from modules.authentication.service import get_current_user
 from .retrieval import RetrievalService
-from .models import Alice
+from modules.core.database import Alice
 from .schema import ExtractedExperience, ExtractedSkills
 from typing import Annotated
 from modules.core.logs import setup_logger

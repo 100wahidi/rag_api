@@ -1,7 +1,6 @@
 import json
 import logging
 from typing import Optional
-from xml.parsers.expat import model
 from mistralai.client import Mistral
 from sqlalchemy.ext.asyncio import AsyncSession
 from .schema import GeneratedCV, RetrievedExperiences, RetrievedProjects, OfferExtraction, UserProfile

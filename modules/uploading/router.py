@@ -5,7 +5,7 @@ from sqlmodel import select, insert
 from modules.core.dependencies import get_db
 from modules.authentication.service import get_current_user
 from .schema import RetrievedProjects, RetrievedExperiences
-from .models import Alice, experience, project
+from modules.core.database import Alice, experience, project
 from typing import Annotated
 from modules.core.logs import setup_logger
 

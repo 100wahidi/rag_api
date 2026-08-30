@@ -5,20 +5,38 @@ import uuid
 from sqlmodel import Field, SQLModel
 
 
+class Alice(SQLModel, table=True):
+    user_id: uuid.UUID = Field(primary_key=True, default_factory=uuid.uuid4)
+    name: Optional[str] = None
+    hashed_password: Optional[str] = None
+    number: Optional[int] = None
+    email_adress: Optional[str] = None
+    Education: Optional[str] = None
+    adress: Optional[str] = None
+
+    __table_args__ = {"extend_existing": True} # < new
+
+
 
 class experience(SQLModel, table=True):
-    user_id: uuid.UUID = Field(primary_key=True)
+    id: uuid.UUID = Field(primary_key=True)
     title: Optional[str] = None
     content: Optional[str] = None
     user_id: uuid.UUID = Field(default_factory=uuid.uuid4, foreign_key="alice.user_id")
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
+    __table_args__ = {"extend_existing": True} # < new
+
+
 class project(SQLModel, table=True):
-    user_id: uuid.UUID = Field(primary_key=True)
+    id: uuid.UUID = Field(primary_key=True)
     title: Optional[str] = None
     content: Optional[str] = None
     user_id: uuid.UUID = Field(default_factory=uuid.uuid4, foreign_key="alice.user_id")
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+
+    __table_args__ = {"extend_existing": True} # < new
+
 
 class documents(SQLModel, table=True):
     id: int = Field(primary_key=True)
