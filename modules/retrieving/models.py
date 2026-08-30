@@ -3,6 +3,7 @@ import uuid
 from sqlmodel import Field, SQLModel
 
 
+
 class Alice(SQLModel, table=True):
     user_id: uuid.UUID = Field(primary_key=True, default_factory=uuid.uuid4)
     name: Optional[str] = None

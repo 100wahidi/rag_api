@@ -1,17 +1,18 @@
 import uvicorn
 import asyncio
+import torch
 from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from sentence_transformers import SentenceTransformer
-from modules.core.logs import setup_logger
 from modules.core.security import Settings
 from modules.core.llm import Llm
+from modules.core.logs import setup_logger
 from modules.core.dependencies import make_engine, make_sessionmaker
 from modules.authentication.router import router as auth_router
 from modules.extraction.router import router as extraction_router
-from modules.retrieval.router import router as retrieval_router
+from modules.retrieving.router import router as retrieval_router
 from modules.generation.router import router as generation_router
 from modules.uploading.router import router as uploading_router
 
@@ -27,19 +28,25 @@ async def lifespan(app: FastAPI):
     app.state.async_session = make_sessionmaker(engine)
     app.state.db_engine = engine
 
-    # create a small thread pool for blocking model [mitigate sync model calls blocking the event loop]
-    app.state.model_executor = ThreadPoolExecutor(max_workers=4)
-    # semaphore to limit concurrent sync model calls
-    app.state.model_semaphore = asyncio.Semaphore(4)
+    # 1. Optimize thread scheduling: Prevent PyTorch from spawning excess BLAS threads
+    torch.set_num_threads(1)
 
-    # calling the model loading in a separate thread to avoid blocking the event loop 
-    def _load_embedding_model():
-        return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-    app.state.embedding_model = await asyncio.get_running_loop().run_in_executor(
-        app.state.model_executor, _load_embedding_model
+    # 2. Allocate bounded worker pool (Single point of concurrency control)
+    model_executor = ThreadPoolExecutor(
+        max_workers=4, thread_name_prefix="ml-inference"
+    )
+    app.state.model_executor = model_executor
+
+    # 4. Offload blocking model loading to background thread
+    loop = asyncio.get_running_loop()
+    embedding_model = await loop.run_in_executor(
+        model_executor,
+        lambda: SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2"),
     )
 
-    # initialize the generation service with Mistral API key and model(to enhence availability)
+    app.state.embedding_model = embedding_model
+
+     # initialize the generation service with Mistral API key and model(to enhence availability)
     app.state.generation_model = Llm(api_key=settings.MISTRAL_API_KEY)
 
     yield
