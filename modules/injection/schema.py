@@ -2,7 +2,6 @@ from typing import List, Optional
 from uuid import UUID
 from pydantic import BaseModel, Field
 
-
 class ExperienceItem(BaseModel):
     title: str = Field(..., description="Job title + duration/dates + company name if applicable")
     content: str = Field(..., description="Detailed impact bullet points or responsibilities")
