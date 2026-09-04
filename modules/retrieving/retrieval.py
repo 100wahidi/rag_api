@@ -48,7 +48,7 @@ class RetrievalService:
             WHERE 
                 user_id = :user_id 
                 AND embedding IS NOT NULL
-                AND (embedding <=> :vector) <= 0.2
+                AND (embedding <=> :vector) <= 1
             ORDER BY embedding <=> :vector ASC
             LIMIT :limit;
         """)
