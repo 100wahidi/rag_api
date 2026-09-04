@@ -370,17 +370,3 @@ AsyncLlm = AsyncGroqProvider
 class PayloadResponse(BaseModel):
     content: str
 
-
-if __name__ == "__main__":
-    # Exemple de test : définir GROQ_API_KEY avant d'exécuter ce fichier.
-    llm = AsyncGroqProvider(api_key=os.environ.get("GROQ_API_KEY"))
-    print(
-        asyncio.run(
-            llm.generate_structured(
-                "You are a helpful assistant.",
-                "Please provide a JSON response with a 'content' field containing a greeting.",
-                PayloadResponse,
-            )
-        ).content
-    )
-
