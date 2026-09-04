@@ -29,7 +29,7 @@ class RetrievalService:
         retrieval_vector: list[float],
         target: str,
         top_k: int = 3,
-        min_similarity: float = 0.50
+        min_similarity: float = 0.70
     ) -> Sequence[RetrievedItemDTO]:
         """Performs index-scanned cosine similarity search against pgvector with tenant bounds."""
         table_name = target
@@ -48,7 +48,7 @@ class RetrievalService:
             WHERE 
                 user_id = :user_id 
                 AND embedding IS NOT NULL
-                AND (embedding <=> :vector) <= 1
+                AND (embedding <=> :vector) >= :max_distance
             ORDER BY embedding <=> :vector ASC
             LIMIT :limit;
         """)
