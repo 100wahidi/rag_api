@@ -373,7 +373,7 @@ class PayloadResponse(BaseModel):
 
 if __name__ == "__main__":
     # Exemple de test : définir GROQ_API_KEY avant d'exécuter ce fichier.
-    llm = AsyncGroqProvider("REMOVED_GROQ_KEY")
+    llm = AsyncGroqProvider(api_key=os.environ.get("GROQ_API_KEY"))
     print(
         asyncio.run(
             llm.generate_structured(
