@@ -5,14 +5,13 @@ from typing import Dict, List
 import uuid
 from pypdf import PdfReader
 from sqlalchemy.orm import Session
-from modules.core.llm import Llm  # Imports configured OpenAI / Claude / Gemini client
+from modules.core.llm import GroqProvider  # Imports configured OpenAI / Claude / Gemini client
 from modules.core.database import experience, project  # Target DB models
 from modules.injection.schema import ExtractionLLMResponse, ExperienceItem, ProjectItem
-from modules.core.security import Settings
 
 
 class InjectionService:
-    def __init__(self, llm_client: Llm):
+    def __init__(self, llm_client: GroqProvider):
         self.llm_client = llm_client
     # standardizing llm mistralling initialization for different operations
     @staticmethod
@@ -28,7 +27,6 @@ class InjectionService:
 
     async def extract_entities_with_llm(self, cv_text: str) -> ExtractionLLMResponse:
         """Invokes LLM with strict JSON schema instructions to extract experiences and projects."""
-        client = self.llm_client
 
         system_prompt = (
             "You are an expert ATS document parser. Extract all professional experiences and projects "
@@ -40,19 +38,14 @@ class InjectionService:
         user_prompt = f"CV TEXT:\n\"\"\"\n{cv_text}\n\"\"\"\n\nExtract experiences and projects into JSON."
 
         # Structured output call (compatible with OpenAI / LangChain wrapper)
-        response = client.get_llm_client().chat.complete(
-            model=client.handlel_llm(),
-            response_format={"type": "json_object"},
-            temperature=0.0,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-        )
+        response = await self.llm_client.generate_structured(
+                                system_prompt=system_prompt,
+                                user_prompt=user_prompt,
+                                response_format=ExtractionLLMResponse
+                                                    )
 
-        raw_json = response.choices[0].message.content
-        parsed = json.loads(raw_json)
-        return ExtractionLLMResponse(**parsed)
+
+        return response
 
     @staticmethod
     async def insert_extracted_records(

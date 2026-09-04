@@ -1,47 +1,45 @@
 import ast
 from modules.extraction.models import ExractionItem
-from mistralai.client import Mistral
 from modules.core.prompts import PARSE_QUESTION_SYSTEM_PROMPT, PARSE_QUESTION_USER_TEMPLATE
 from modules.core.logs import setup_logger
+from modules.core.llm import AsyncGroqProvider 
 
 logger = setup_logger(__name__)
 
 class ExtractionService:
-    def __init__(self, api_key: str):
-        self.MISTRAL_API_KEY:str = api_key
 
-    def extract(
-                self, text: str,
-                system_prompt: str = PARSE_QUESTION_SYSTEM_PROMPT,
-                user_template: str = PARSE_QUESTION_USER_TEMPLATE
-                ): 
+    def __init__(self, client: AsyncGroqProvider = None):
+        self.client = client 
     
-        user_msg = user_template.format(question=text)
-        Client = Mistral(api_key=self.MISTRAL_API_KEY)
+    async def extract(
+                    self, text: str,
+                    system_prompt: str = PARSE_QUESTION_SYSTEM_PROMPT,
+                    user_template: str = PARSE_QUESTION_USER_TEMPLATE,
+                    response_model= ExractionItem,
+                    ): 
+        
+            user_msg = user_template.format(question=text)
 
-        if not Client:
-            raise ValueError("Client is not served. Please provide a valid API key.")
-        else:
-            logger.info("Client is served. Proceeding with extraction.")
-            try:
-                extracted = Client.chat.parse(
-                        model="ministral-8b-latest",
-                        # LLM Provider Class as an after test ticket 
-                        messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_msg},
-                        ],
-                        response_format=ExractionItem, # Pydantic model
-                        )
+            Client = self.client 
+
+            if not Client:
+                raise ValueError("Client is not served. Please provide a valid API key.")
+            else:
+                logger.info("Client is served. Proceeding with extraction.")
+                try:
+                    extracted = await Client.generate_structured(
+                        system_prompt=system_prompt,
+                        user_prompt=user_msg,
+                        response_format=response_model
+                    )
+                    
+                except Exception as e:
+                    logger.error("Error during extraction: %s", e)
+                    raise ValueError(f"Extraction failed: {e}")
                 
-            except Exception as e:
-                logger.error("Error during extraction: %s", e)
-                raise ValueError(f"Extraction failed: {e}")
-            
-            logger.info("Extraction results: %s", extracted.choices[0].message.content)
-            extracted_dict = self.extract_dict_from_string(extracted.choices[0].message.content)
+                logger.info("Extraction results: %s", extracted)
 
-            return extracted_dict
+                return extracted
 
 
     def extract_dict_from_string(self, extraction_string: str):

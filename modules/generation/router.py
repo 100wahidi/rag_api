@@ -25,10 +25,10 @@ async def upload_file(
 ):  
     # Access the generation model from the FastAPI app state
     Client_llm = await get_service(request)
+    print(Client_llm.handlel_llm())
     # since mistral llm is async, we can call it directly without blocking the event loop
     latex_cv = await GenerationService(
-        Client=Client_llm.get_llm_client(),
-        model=Client_llm.handlel_llm()
+        Client=Client_llm,
     ).generate_cv(username, session, generation_payload.offer_extraction,generation_payload.best_experiences, generation_payload.best_projects)
     
     return {"username": username, "latex_cv": latex_cv}

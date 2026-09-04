@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from sentence_transformers import SentenceTransformer
 from modules.core.security import Settings
-from modules.core.llm import Llm
+from modules.core.llm import AsyncGroqProvider
 from modules.core.logs import setup_logger
 from modules.core.dependencies import make_engine, make_sessionmaker
 from modules.authentication.router import router as auth_router
@@ -47,8 +47,8 @@ async def lifespan(app: FastAPI):
 
     app.state.embedding_model = embedding_model
 
-     # initialize the generation service with Mistral API key and model(to enhence availability)
-    app.state.generation_model = Llm(api_key=settings.MISTRAL_API_KEY)
+     # initialize the generation service with Groq API key and model(to enhence availability)
+    app.state.generation_model = AsyncGroqProvider(api_key=settings.GROQ_API_KEY)
 
     yield
     # shutdown[end_event]: dispose engine, stop executor, close async clients and any other resources

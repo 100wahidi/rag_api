@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = os.getenv("ALGORITHM")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     PG_DB_URL: str = os.getenv("PG_DB_URL")
-    MISTRAL_API_KEY: str = os.getenv("MISTRAL_API_KEY")
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY")
     ORIGINS: str = os.getenv("ORIGINS")
 
     model_config = SettingsConfigDict(

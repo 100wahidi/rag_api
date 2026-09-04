@@ -1,10 +1,10 @@
 import json
 import logging
 from typing import Optional
-from mistralai.client import Mistral
 from sqlalchemy.ext.asyncio import AsyncSession
 from .schema import GeneratedCV, RetrievedExperiences, RetrievedProjects, OfferExtraction, UserProfile
 from sqlmodel import select
+from modules.core.llm import GroqProvider
 from .models import Alice
 from modules.generation.latex_renderer import LaTeXRenderer
 from  modules.core.prompts import SYSTEM_PROMPT
@@ -16,13 +16,11 @@ logger = logging.getLogger(__name__)
 class GenerationService:
     def __init__(
         self,
-        Client: Mistral,
-        model: str ,
+        Client: GroqProvider,
         renderer: Optional[LaTeXRenderer] = None,
     ):
         self.renderer = renderer or LaTeXRenderer()
-        self.client = Client
-        self.model = model
+        self.client:GroqProvider = Client
 
     async def generate_cv(
         self,
@@ -72,22 +70,24 @@ class GenerationService:
         )
 
         try:
-            response = await self.client.chat.parse_async(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": payload},
-                ],
-                response_format=GeneratedCV,
-                temperature=0.2, # Low temperature for factual consistency
-            )
+            response = await self.client.generate_structured(
+                                    system_prompt=SYSTEM_PROMPT,
+                                    user_prompt=payload,
+                                    response_format=GeneratedCV
+                                    )
             
-            structured_data: GeneratedCV = response.choices[0].message.parsed
+
+            structured_data: GeneratedCV = response
             
             # Deterministic, safe rendering
-            latex_source = self.renderer.render(structured_data)
-            return structured_data, latex_source
 
+            try:
+                latex_source = self.renderer.render(structured_data)
+            except Exception as render_err:
+                logger.error(f"LaTeX rendering failed: {render_err}")
+                raise RuntimeError(f"LaTeX rendering failed: {render_err}") from render_err
+            return structured_data, latex_source
+        
         except Exception as err:
             raise RuntimeError(f"CV Generation Pipeline Error: {err}") from err
 
@@ -99,16 +99,18 @@ class GenerationService:
         projects: RetrievedProjects,
     ) -> str:
         return f"""### TARGET JOB DESCRIPTION
-{json.dumps(offer.model_dump(), indent=2)}
 
-### CANDIDATE BASE PROFILE
-{json.dumps(user.model_dump(), indent=2)}
+        {json.dumps(offer.model_dump(), indent=2)}
 
-### RETRIEVED RELEVANT EXPERIENCES (RAG)
-{json.dumps(experiences.model_dump(), indent=2)}
+        ### CANDIDATE BASE PROFILE
+        {json.dumps(user.model_dump(), indent=2)}
 
-### RETRIEVED RELEVANT PROJECTS (RAG)
-{json.dumps(projects.model_dump(), indent=2)}
+        ### RETRIEVED RELEVANT EXPERIENCES (RAG)
+        {json.dumps(experiences.model_dump(), indent=2)}
 
-Synthesize this data into the required structured CV output. Prioritize high-relevance matches for the target role."""
+        ### RETRIEVED RELEVANT PROJECTS (RAG)
+        {json.dumps(projects.model_dump(), indent=2)}
+
+        Synthesize this data into the required structured CV output. 
+        Prioritize high-relevance matches for the target role."""
 
