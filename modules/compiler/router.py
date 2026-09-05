@@ -1,42 +1,86 @@
-import asyncio
-from modules.compiler.LatexCompiler import LatexCompiler
-from fastapi import APIRouter
-from fastapi import HTTPException
-from fastapi.responses import Response
-from pydantic import BaseModel, Field, validator
+from typing import Annotated
 
-router = APIRouter(prefix="/compiler", tags=["LaTeX Compiler"])
-MAX_LATEX_PAYLOAD_SIZE_BYTES = 512 * 1024  # 512 KB limit for CV source
-COMPILATION_TIMEOUT_SECONDS = 8.0
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import Response
+from pydantic import BaseModel, Field, field_validator
+
+from modules.compiler.LatexCompiler import (
+    LatexCompilationError,
+    LatexCompiler,
+    LatexTimeoutError,
+)
+
+MAX_LATEX_PAYLOAD_SIZE = 512 * 1024  # 512 KB
+EXECUTION_TIMEOUT_SECONDS = 8.0
+
+# Singleton compiler engine reference
+COMPILER_INSTANCE: LatexCompiler | None = None
+
+
+def get_compiler() -> LatexCompiler:
+    if COMPILER_INSTANCE is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="LaTeX compilation engine is not initialized.",
+        )
+    return COMPILER_INSTANCE
 
 
 class LatexCompileRequest(BaseModel):
-    latex_source: str 
+    latex_source: str = Field(
+        ...,
+        min_length=10,
+        max_length=MAX_LATEX_PAYLOAD_SIZE,
+        description="Raw LaTeX source string.",
+    )
+
+    @field_validator("latex_source")
+    @classmethod
+    def validate_primitives(cls, value: str) -> str:
+        forbidden = (r"\write18", r"\input", r"\include", r"\openout")
+        if any(token in value for token in forbidden):
+            raise ValueError("Payload contains forbidden LaTeX macros/primitives.")
+        return value
+
+
+router = APIRouter(prefix="/v1/cv", tags=["CV Compiler"])
+
 
 @router.post(
-    "/compiler_endpoint",
+    "/compile",
     response_class=Response,
     responses={
         200: {"content": {"application/pdf": {}}},
         400: {"description": "LaTeX Syntax Compilation Error"},
         413: {"description": "Payload Too Large"},
+        500: {"description": "Internal Compiler Engine Failure"},
         504: {"description": "Compilation Timeout"},
     },
 )
-async def compile_latex_to_pdf(payload: LatexCompileRequest):
-    compiler = LatexCompiler(payload.latex_source)
-    if not await compiler.resolve_tex_engine():
-        raise HTTPException(status_code=400, detail="Failed to resolve LaTeX engine")
-    
+async def compile_latex_to_pdf(
+    payload: LatexCompileRequest,
+    compiler: Annotated[LatexCompiler, Depends(get_compiler)],
+):
     try:
-        pdf_bytes = await asyncio.wait_for(
-            compiler.compile_to_pdf(),
-            timeout=COMPILATION_TIMEOUT_SECONDS
+        pdf_bytes = await compiler.compile(
+            latex_source=payload.latex_source,
+            timeout=EXECUTION_TIMEOUT_SECONDS,
         )
-    except asyncio.TimeoutError as exc:
-        raise HTTPException(status_code=504, detail="LaTeX compilation timed out") from exc
+    except LatexTimeoutError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            detail=str(exc),
+        )
+    except LatexCompilationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"LaTeX compilation failed: {str(exc)}",
+        )
     except Exception as exc:
-        raise HTTPException(status_code=400, detail="LaTeX compilation failed") from exc
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal error processing LaTeX compilation.",
+        ) from exc
 
     return Response(
         content=pdf_bytes,

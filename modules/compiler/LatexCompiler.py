@@ -1,52 +1,77 @@
 import asyncio
+import os
 import re
-import shutil
 import tempfile
 from pathlib import Path
+from typing import Optional
+
+
+class LatexCompilationError(Exception):
+    """Raised when LaTeX compilation produces syntax or engine errors."""
+    pass
+
+
+class LatexTimeoutError(Exception):
+    """Raised when compilation exceeds execution quota."""
+    pass
 
 
 class LatexCompiler:
-    def __init__(self, latex_source: str):
-        if len(latex_source) < 10:
-            raise ValueError("latex_source must contain at least 10 characters.")
-        self.latex_source = latex_source
+    def __init__(self, binary_path: str):
+        self._binary_path = binary_path
 
     @staticmethod
-    async def resolve_tex_engine(engine_name: str = "pdflatex") -> str:
-        """Resolve the absolute path to the TeX compiler."""
-        binary_path = shutil.which(engine_name) or shutil.which(f"{engine_name}.exe")
-        if not binary_path:
-            raise FileNotFoundError(
-                f"TeX Engine '{engine_name}' not found. Install MiKTeX or TeX Live."
-            )
-        return binary_path
+    def _parse_log_diagnostic(log_path: Path, raw_stderr: bytes) -> str:
+        """Extracts the first critical TeX syntax error from log files."""
+        if log_path.exists():
+            log_text = log_path.read_text(encoding="utf-8", errors="replace")
+            match = re.search(r"!(.*?)(?=\n\n|\n\?|\Z)", log_text, re.DOTALL)
+            if match:
+                return match.group(1).strip().replace("\n", " ")
+        return raw_stderr.decode("utf-8", errors="replace").strip() or "Syntax error during LaTeX compilation."
 
-    async def compile_to_pdf(self) -> bytes:
-        compiler_path = await self.resolve_tex_engine()
+    async def compile(self, latex_source: str, timeout: float = 8.0) -> bytes:
+        # Isolated scratchpad workspace
         with tempfile.TemporaryDirectory(prefix="cv_tex_") as temp_dir:
             work_dir = Path(temp_dir).resolve()
             tex_file = work_dir / "document.tex"
             pdf_file = work_dir / "document.pdf"
             log_file = work_dir / "document.log"
-            tex_file.write_text(self.latex_source, encoding="utf-8")
+
+            tex_file.write_text(latex_source, encoding="utf-8")
+
+            cmd = [
+                self._binary_path,
+                "-no-shell-escape",
+                "-interaction=nonstopmode",
+                "-halt-on-error",
+                f"-output-directory={str(work_dir)}",
+                str(tex_file.name),
+            ]
 
             process = await asyncio.create_subprocess_exec(
-                compiler_path, "-no-shell-escape", "-interaction=nonstopmode",
-                "-halt-on-error", f"-output-directory={work_dir}", str(tex_file),
-                cwd=str(work_dir), stdout=asyncio.subprocess.PIPE,
+                *cmd,
+                cwd=str(work_dir),
+                stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
+
             try:
-                _, stderr = await asyncio.wait_for(process.communicate(), timeout=10.0)
+                stdout, stderr = await asyncio.wait_for(
+                    process.communicate(),
+                    timeout=timeout,
+                )
             except asyncio.TimeoutError:
-                process.kill()
-                await process.wait()
-                raise TimeoutError("LaTeX compilation timed out after 10.0 seconds.")
+                # Guaranteed process cleanup
+                try:
+                    process.kill()
+                    await process.wait()
+                except ProcessLookupError:
+                    pass
+                raise LatexTimeoutError(f"Compilation exceeded deadline of {timeout}s.")
 
             if process.returncode != 0 or not pdf_file.exists():
-                log_content = (log_file.read_text(encoding="utf-8", errors="replace")
-                               if log_file.exists() else stderr.decode("utf-8", errors="replace"))
-                match = re.search(r"!(.*?)(?=\n\n|\n\?|\Z)", log_content, re.DOTALL)
-                detail = match.group(1).strip().replace("\n", " ") if match else "Syntax error in LaTeX source."
-                raise RuntimeError(f"Compilation failed: {detail}")
+                detail = self._parse_log_diagnostic(log_file, stderr)
+                raise LatexCompilationError(detail)
+
             return pdf_file.read_bytes()
