@@ -7,7 +7,7 @@ from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from modules.core.llm import GroqProvider
-from modules.core.models import UserProfileRecord  # Renamed from Alice
+from modules.core.models import Alice  # Renamed from Alice
 from modules.core.prompts import SYSTEM_PROMPT
 from modules.generation.latex_renderer import LaTeXRenderer
 from modules.generation.schema import (
@@ -39,7 +39,7 @@ class GenerationService:
         best_projects: RetrievedProjects,
     ) -> tuple[GeneratedCV, str]:
         # Index-driven deterministic query on primary key
-        stmt = select(UserProfileRecord).where(UserProfileRecord.id == user_id)
+        stmt = select(Alice).where(Alice.id == user_id)
         result = await session.execute(stmt)
         user = result.scalar_one_or_none()
         
