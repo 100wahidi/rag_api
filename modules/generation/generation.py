@@ -2,7 +2,7 @@ import json
 import logging
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from .schema import GeneratedCV, RetrievedExperiences, RetrievedProjects, OfferExtraction, UserProfile
+from modules.generation.schema import GeneratedCV, RetrievedExperiences, RetrievedProjects, OfferExtraction, UserProfile
 from sqlmodel import select
 from modules.core.llm import GroqProvider
 from .models import Alice
