@@ -76,7 +76,7 @@ LATEX_CV_TEMPLATE = r"""
 % ================= PROFESSIONAL EXPERIENCE =================
 \section*{Professional Experience}
 \BLOCK{ for exp in cv.experiences }
-	extbf{\VAR{ exp.company }} \hfill \textit{\VAR{ exp.start_date } -- \VAR{ exp.end_date }} \par
+    extbf{\VAR{ exp.company }} \hfill \textit{\VAR{ exp.start_date } -- \VAR{ exp.end_date }} \par
 \textit{\VAR{ exp.role }} \hfill \textit{\VAR{ exp.location }}
 \begin{itemize}
     \BLOCK{ for bullet in exp.bullets }
@@ -103,7 +103,7 @@ LATEX_CV_TEMPLATE = r"""
 % ================= EDUCATION =================
 \section*{Education}
 \BLOCK{ for edu in cv.education }
-	extbf{\VAR{ edu.degree }} \hfill \textit{\VAR{ edu.school }} \par
+    extbf{\VAR{ edu.degree }} \hfill \textit{\VAR{ edu.school }} \par
 \textit{Graduation: \VAR{ edu.graduation_year }}
 \BLOCK{ if edu.description } -- \VAR{ edu.description }\BLOCK{ endif }
 \vspace{0.15cm}

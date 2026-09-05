@@ -36,15 +36,14 @@ async def upload_file(
 ):  
     # Access the generation model from the FastAPI app state
     Client_llm = await get_service(request)
-    print(Client_llm.handlel_llm())
     # since mistral llm is async, we can call it directly without blocking the event loop
-    latex_cv = await GenerationService(
+    latex_source = await GenerationService(
         Client=Client_llm,
     ).generate_cv(username, session, generation_payload.offer_extraction,generation_payload.best_experiences, generation_payload.best_projects)
 
     try:
         pdf_bytes = await compiler.compile(
-            latex_source=latex_cv.latex_source,
+            latex_source=latex_source,
             timeout=EXECUTION_TIMEOUT_SECONDS,
         )
     except LatexTimeoutError as exc:
