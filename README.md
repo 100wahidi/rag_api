@@ -1,9 +1,15 @@
-<p align="left">
-  <img src="https://skillicons.dev/icons?i=py,fastapi,postgres,docker&theme=light" height="48" alt="Core Technologies" />
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg" height="46" width="46" alt="PyTorch" style="margin: 0 4px;" />
-  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/latex/latex-original.svg" height="46" width="46" alt="LaTeX" style="margin: 0 4px;" />
-  <img src="https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/vectors-and-icons/langchain-color-icon-t2s290z2uubfom3c61w6r.png/langchain-color-icon-q58u6m9i1p75440gcs6hbg.png?_a=DAJFJtWIZAAC" height="46" width="46" alt="LangChain" style="margin: 0 4px;" />
-  <img src="https://avatars.githubusercontent.com/u/115962809?s=200&v=4" height="46" width="46" alt="Astral uv" style="margin: 0 4px; border-radius: 8px;" />
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=py,fastapi,ts,supabase,postgres,pytorch,hf,docker,git" height="48" alt="Core Technologies" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/latex/latex-original.svg" height="42" width="42" alt="LaTeX" style="margin-left: 6px; vertical-align: top;" />
+  <img src="https://groq.com/wp-content/uploads/2024/03/groq-icon-black.png" height="42" width="42" alt="Groq LPU" style="margin-left: 10px; vertical-align: top;" />
+  <img src="https://assets.astral.sh/uv/uv-light.svg" height="42" width="42" alt="Astral uv" style="margin-left: 10px; vertical-align: top;" />
+</p>
+
+<p align="center">
+  <a href="#ddia-canon"><img src="https://img.shields.io/badge/Architecture-Kleppmann_DDIA_Canon-black?style=for-the-badge" alt="DDIA Canon" /></a>
+  <a href="#benchmarks"><img src="https://img.shields.io/badge/Inference_Speed-Groq_LPU_Engineered-f55036?style=for-the-badge" alt="Groq Inference" /></a>
+  <a href="#benchmarks"><img src="https://img.shields.io/badge/Latency_Profile-Deterministic_P99-0052FF?style=for-the-badge" alt="P99 Latency" /></a>
+  <a href="#sandboxing"><img src="https://img.shields.io/badge/Compilation-Jailed_POSIX-red?style=for-the-badge" alt="POSIX Sandbox" /></a>
 </p>
 
 ---
