@@ -18,7 +18,7 @@ from modules.retrieving.router import router as retrieval_router
 from modules.generation.router import router as generation_router
 from modules.uploading.router import router as uploading_router
 from modules.injection.router import router as injection_router
-from modules.compiler.router import router as compiler_router
+from modules.compiler import router as compiler_module
 
 
 
@@ -58,13 +58,13 @@ async def lifespan(app: FastAPI):
     if not resolved_path:
         raise RuntimeError("FATAL: pdflatex binary not found in container runtime PATH.")
     
-    compiler_router.COMPILER_INSTANCE = LatexCompiler(binary_path=resolved_path)
+    compiler_module.COMPILER_INSTANCE = LatexCompiler(binary_path=resolved_path)
 
     yield
     # shutdown[end_event]: dispose engine, stop executor, close async clients and any other resources
     await engine.dispose()
     app.state.model_executor.shutdown(wait=True)
-    compiler_router.COMPILER_INSTANCE = None
+    compiler_module.COMPILER_INSTANCE = None
 
 
 
