@@ -53,9 +53,9 @@ LATEX_CV_TEMPLATE = r"""
 % ================= HEADER =================
 \begin{center}
     {\LARGE \textbf{\VAR{ cv.header.name | tex }}}\par\vspace{0.3em}
-    \VAR{ cv.header.city | tex } $\bullet$ \VAR{ cv.header.phone | tex } $\bullet$ \href{mailto:\VAR{ cv.header.email }}{\VAR{ cv.header.email | tex }}
-    \BLOCK{ if cv.header.linkedin } $\bullet$ \href{\VAR{ cv.header.linkedin }}{LinkedIn}\BLOCK{ endif }
-    \BLOCK{ if cv.header.github } $\bullet$ \href{\VAR{ cv.header.github }}{GitHub}\BLOCK{ endif }\par\vspace{0.3em}
+    \VAR{ cv.header.city | tex } $\bullet$ \VAR{ cv.header.phone | tex } $\bullet$ \href{mailto:\VAR{ cv.header.email | tex }}{\VAR{ cv.header.email | tex }}
+    \BLOCK{ if cv.header.linkedin } $\bullet$ \href{\VAR{ cv.header.linkedin | tex }}{LinkedIn}\BLOCK{ endif }
+    \BLOCK{ if cv.header.github } $\bullet$ \href{\VAR{ cv.header.github | tex }}{GitHub}\BLOCK{ endif }\par\vspace{0.3em}
     \textbf{\Large \VAR{ cv.header.title | tex }}
 \end{center}
 

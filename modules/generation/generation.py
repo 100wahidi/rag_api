@@ -1,65 +1,55 @@
 import json
 import logging
 from typing import Optional
-from uuid import UUID
-
-from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from modules.generation.schema import GeneratedCV, RetrievedExperiences, RetrievedProjects, OfferExtraction, UserProfile
+from sqlmodel import select
 from modules.core.llm import GroqProvider
-from modules.core.models import Alice  # Renamed from Alice
-from modules.core.prompts import SYSTEM_PROMPT
+from .models import Alice
 from modules.generation.latex_renderer import LaTeXRenderer
-from modules.generation.schema import (
-    GeneratedCV,
-    OfferExtraction,
-    RetrievedExperiences,
-    RetrievedProjects,
-    UserProfile,
-)
+from  modules.core.prompts import SYSTEM_PROMPT
 
 logger = logging.getLogger(__name__)
+
 
 
 class GenerationService:
     def __init__(
         self,
-        client: GroqProvider,
+        Client: GroqProvider,
         renderer: Optional[LaTeXRenderer] = None,
     ):
-        self.client = client
         self.renderer = renderer or LaTeXRenderer()
+        self.client:GroqProvider = Client
 
-    async def generate_cv_for_user(
+    async def generate_cv(
         self,
-        user_id: UUID,
+        username: str,
         session: AsyncSession,
         offer_extraction: OfferExtraction,
         best_experiences: RetrievedExperiences,
         best_projects: RetrievedProjects,
-    ) -> tuple[GeneratedCV, str]:
-        # Index-driven deterministic query on primary key
-        stmt = select(Alice).where(Alice.id == user_id)
-        result = await session.execute(stmt)
-        user = result.scalar_one_or_none()
-        
+    ) -> str:
+        user_result = await session.execute(select(Alice).where(Alice.name == username))
+        user = user_result.scalar_one_or_none()
         if user is None:
-            raise ValueError(f"User profile not found for ID: {user_id}")
+            raise ValueError(f"No user found for username: {username}")
 
-        user_profile = UserProfile(
+        user_profile:UserProfile = UserProfile(
             name=user.name,
-            education=user.education,
+            education=user.Education,
             number=user.number,
-            address=user.address,
-            email_address=user.email_address,
+            address=user.adress,
+            email_address=user.email_adress,
         )
 
-        return await self.generate_tailored_cv(
+        _, latex_source = await self.generate_tailored_cv(
             user_profile=user_profile,
             job_offer=offer_extraction,
             retrieved_experiences=best_experiences,
             retrieved_projects=best_projects,
         )
+        return latex_source
 
     async def generate_tailored_cv(
         self,
@@ -68,6 +58,10 @@ class GenerationService:
         retrieved_experiences: RetrievedExperiences,
         retrieved_projects: RetrievedProjects,
     ) -> tuple[GeneratedCV, str]:
+        """
+        Executes LLM structured synthesis and deterministically renders to LaTeX.
+        Returns: (GeneratedCV, latex_source_string)
+        """
         payload = self._assemble_prompt(
             user=user_profile,
             offer=job_offer,
@@ -75,36 +69,47 @@ class GenerationService:
             projects=retrieved_projects,
         )
 
-        structured_cv = await self.client.generate_structured(
-            system_prompt=SYSTEM_PROMPT,
-            user_prompt=payload,
-            response_format=GeneratedCV,
-        )
-
         try:
-            latex_source = self.renderer.render(structured_cv)
-        except Exception as exc:
-            logger.error("Template rendering failed for CV schema", exc_info=True)
-            raise RuntimeError(f"LaTeX rendering failure: {exc}") from exc
+            response = await self.client.generate_structured(
+                                    system_prompt=SYSTEM_PROMPT,
+                                    user_prompt=payload,
+                                    response_format=GeneratedCV
+                                    )
+            
 
-        return structured_cv, latex_source
+            structured_data: GeneratedCV = response
+            
+            # Deterministic, safe rendering
 
-    @staticmethod
+            try:
+                latex_source = self.renderer.render(structured_data)
+            except Exception as render_err:
+                logger.error(f"LaTeX rendering failed: {render_err}")
+                raise RuntimeError(f"LaTeX rendering failed: {render_err}") from render_err
+            return structured_data, latex_source
+        
+        except Exception as err:
+            raise RuntimeError(f"CV Generation Pipeline Error: {err}") from err
+
     def _assemble_prompt(
+        self,
         user: UserProfile,
         offer: OfferExtraction,
         experiences: RetrievedExperiences,
         projects: RetrievedProjects,
     ) -> str:
-        return (
-            "### TARGET JOB DESCRIPTION\n"
-            f"{json.dumps(offer.model_dump(), indent=2)}\n\n"
-            "### CANDIDATE BASE PROFILE\n"
-            f"{json.dumps(user.model_dump(), indent=2)}\n\n"
-            "### RETRIEVED RELEVANT EXPERIENCES (RAG)\n"
-            f"{json.dumps(experiences.model_dump(), indent=2)}\n\n"
-            "### RETRIEVED RELEVANT PROJECTS (RAG)\n"
-            f"{json.dumps(projects.model_dump(), indent=2)}\n\n"
-            "Synthesize this data into the required structured CV output.\n"
-            "Prioritize high-relevance matches for the target role."
-        )
+        return f"""### TARGET JOB DESCRIPTION
+
+        {json.dumps(offer.model_dump(), indent=2)}
+
+        ### CANDIDATE BASE PROFILE
+        {json.dumps(user.model_dump(), indent=2)}
+
+        ### RETRIEVED RELEVANT EXPERIENCES (RAG)
+        {json.dumps(experiences.model_dump(), indent=2)}
+
+        ### RETRIEVED RELEVANT PROJECTS (RAG)
+        {json.dumps(projects.model_dump(), indent=2)}
+
+        Synthesize this data into the required structured CV output. 
+        Prioritize high-relevance matches for the target role."""
