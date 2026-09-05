@@ -1,8 +1,7 @@
 <p align="center">
   <img src="https://skillicons.dev/icons?i=py,fastapi,ts,supabase,postgres,pytorch,hf,docker,git" height="48" alt="Core Technologies" />
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/latex/latex-original.svg" height="42" width="42" alt="LaTeX" style="margin-left: 6px; vertical-align: top;" />
-  <img src="https://groq.com/wp-content/uploads/2024/03/groq-icon-black.png" height="42" width="42" alt="Groq LPU" style="margin-left: 10px; vertical-align: top;" />
-  <img src="https://assets.astral.sh/uv/uv-light.svg" height="42" width="42" alt="Astral uv" style="margin-left: 10px; vertical-align: top;" />
+
 </p>
 
 ---
