@@ -1,6 +1,7 @@
 import uvicorn
 import asyncio
 import torch
+import shutil
 from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,6 +9,7 @@ from contextlib import asynccontextmanager
 from sentence_transformers import SentenceTransformer
 from modules.core.security import Settings
 from modules.core.llm import AsyncGroqProvider
+from modules.compiler.LatexCompiler import LatexCompiler
 from modules.core.logs import setup_logger
 from modules.core.dependencies import make_engine, make_sessionmaker
 from modules.authentication.router import router as auth_router
@@ -51,10 +53,19 @@ async def lifespan(app: FastAPI):
      # initialize the generation service with Groq API key and model(to enhence availability)
     app.state.generation_model = AsyncGroqProvider(api_key=settings.GROQ_API_KEY)
 
+
+    resolved_path = shutil.which("pdflatex")
+    if not resolved_path:
+        raise RuntimeError("FATAL: pdflatex binary not found in container runtime PATH.")
+    
+    compiler_router.COMPILER_INSTANCE = LatexCompiler(binary_path=resolved_path)
+
     yield
     # shutdown[end_event]: dispose engine, stop executor, close async clients and any other resources
     await engine.dispose()
     app.state.model_executor.shutdown(wait=True)
+    compiler_router.COMPILER_INSTANCE = None
+
 
 
 app = FastAPI(lifespan=lifespan)

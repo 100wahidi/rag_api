@@ -1,9 +1,7 @@
 from typing import Annotated
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import Response
 from pydantic import BaseModel, Field, field_validator
-
 from modules.compiler.LatexCompiler import (
     LatexCompilationError,
     LatexCompiler,
