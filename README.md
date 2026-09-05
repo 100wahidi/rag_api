@@ -1,4 +1,13 @@
----
+# Latency-Engineered CV Generation & Retrieval Engine (`rag_api`)
+
+A resilient, asynchronous REST platform built with **FastAPI**, **PostgreSQL (`pgvector`)**, **asyncpg**, and **LangChain**, designed for low-latency contextual retrieval, parsing, and deterministic LaTeX resume and cover-letter compilation.
+
+
+
+## 1. System Architecture
+
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/f0c3c627-e285-40f9-b72d-44b55b8d1113" />
+
 
 ## 2. Core Architectural Principles & System Canon
 
@@ -67,3 +76,17 @@ cp .env.example .env
 
 # 4. Start Development Server
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+
+---
+
+### 4. Actionable Growth Roadmap (Next Iteration)
+
+1. **Jailed Subprocess Sandboxing (Ticket #SEC-201)**:
+   * Isolate the `pdflatex` execution boundary inside a locked-down, unprivileged execution jail (e.g., using `nsjail`, `bwrap`, or ephemeral gVisor containers). Disable all outbound network access and explicitly restrict TeX shell escapes (`-no-shell-escape`) to eliminate LaTeX macro injection attack vectors.
+2. **Prometheus Telemetry & $P_{99}$ Latency Profiling (Ticket #PERF-202)**:
+   * Instrument the retrieval and compilation pipelines with Prometheus metrics. Capture granular histogram distributions for database query duration, embedding computation time, and LaTeX compilation latency to detect tail latency degradation under simulated load.
+3. **Property-Based Testing for Payload Sanitization (Ticket #QA-203)**:
+   * Write property-based tests using `hypothesis` targeting the CV data extraction and LaTeX template interpolation pipelines. Generate hostile inputs containing unescaped TeX delimiters, bidirectional Unicode overrides, and schema-violating edge cases to verify fail-fast sanitization boundaries.
+
+Are we addressing Ticket #SEC-201 (LaTeX jail sandboxing) or Ticket #PERF-202 (Prometheus latency histograms) next?
