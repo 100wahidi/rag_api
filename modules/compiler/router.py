@@ -11,21 +11,7 @@ COMPILATION_TIMEOUT_SECONDS = 8.0
 
 
 class LatexCompileRequest(BaseModel):
-    latex_source: str = Field(
-        ...,
-        min_length=10,
-        max_length=MAX_LATEX_PAYLOAD_SIZE_BYTES,
-        description="Raw LaTeX CV string payload",
-    )
-
-    @validator("latex_source")
-    def validate_latex_source(cls, value: str) -> str:
-        if not value.strip():
-            raise ValueError("LaTeX source must not be blank")
-        if len(value.encode("utf-8")) > MAX_LATEX_PAYLOAD_SIZE_BYTES:
-            raise ValueError("LaTeX source exceeds the 512 KB limit")
-        return value
-
+    latex_source: str 
 
 @router.post(
     "/compiler_endpoint",
@@ -39,10 +25,13 @@ class LatexCompileRequest(BaseModel):
 )
 async def compile_latex_to_pdf(payload: LatexCompileRequest):
     compiler = LatexCompiler(payload.latex_source)
+    if not await compiler.resolve_tex_engine():
+        raise HTTPException(status_code=400, detail="Failed to resolve LaTeX engine")
+    
     try:
         pdf_bytes = await asyncio.wait_for(
-            compiler.compile_to_pdf(payload.latex_source),
-            timeout=COMPILATION_TIMEOUT_SECONDS,
+            compiler.compile_to_pdf(),
+            timeout=COMPILATION_TIMEOUT_SECONDS
         )
     except asyncio.TimeoutError as exc:
         raise HTTPException(status_code=504, detail="LaTeX compilation timed out") from exc
