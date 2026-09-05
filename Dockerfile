@@ -37,7 +37,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Install solely essential runtime binaries (minimal TeX + supervisor)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     texlive-latex-base \
+    texlive-latex-extra \
     texlive-fonts-recommended \
+    lmodern \
     tini \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -58,6 +60,9 @@ USER appuser
 
 EXPOSE 8000
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
+    CMD python -c "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:' + os.environ.get('PORT', '8000') + '/health', timeout=3)"
+
 # Supervisor entrypoint to handle signal propagation and reap zombie subprocesses
 ENTRYPOINT ["/usr/bin/tini", "--"]
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]
