@@ -5,13 +5,6 @@
   <img src="https://assets.astral.sh/uv/uv-light.svg" height="42" width="42" alt="Astral uv" style="margin-left: 10px; vertical-align: top;" />
 </p>
 
-<p align="center">
-  <a href="#ddia-canon"><img src="https://img.shields.io/badge/Architecture-Kleppmann_DDIA_Canon-black?style=for-the-badge" alt="DDIA Canon" /></a>
-  <a href="#benchmarks"><img src="https://img.shields.io/badge/Inference_Speed-Groq_LPU_Engineered-f55036?style=for-the-badge" alt="Groq Inference" /></a>
-  <a href="#benchmarks"><img src="https://img.shields.io/badge/Latency_Profile-Deterministic_P99-0052FF?style=for-the-badge" alt="P99 Latency" /></a>
-  <a href="#sandboxing"><img src="https://img.shields.io/badge/Compilation-Jailed_POSIX-red?style=for-the-badge" alt="POSIX Sandbox" /></a>
-</p>
-
 ---
 
 # Latency-Engineered CV Generation & Retrieval Engine (`rag_api`)
