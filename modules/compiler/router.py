@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
-router = APIRouter("compiler")
+router = APIRouter(prefix="/compiler", tags=["LaTeX Compiler"])
 MAX_LATEX_PAYLOAD_SIZE_BYTES = 512 * 1024  # 512 KB limit for CV source
 COMPILATION_TIMEOUT_SECONDS = 8.0
 
@@ -19,7 +19,7 @@ class LatexCompileRequest(BaseModel):
 
 
 @router.post(
-    "/v1/cv/compile-pdf",
+    "/compiler_endpoint",
     response_class=Response,
     responses={
         200: {"content": {"application/pdf": {}}},
