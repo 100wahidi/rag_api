@@ -1,6 +1,5 @@
 from modules.compiler.LatexCompiler import LatexCompiler
-from pathlib import Path
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 

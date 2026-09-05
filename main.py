@@ -16,6 +16,7 @@ from modules.retrieving.router import router as retrieval_router
 from modules.generation.router import router as generation_router
 from modules.uploading.router import router as uploading_router
 from modules.injection.router import router as injection_router
+from modules.compiler.router import router as compiler_router
 
 
 
@@ -72,7 +73,7 @@ app.include_router(extraction_router)
 app.include_router(retrieval_router)
 app.include_router(generation_router)
 app.include_router(injection_router)
-
+app.include_router(compiler_router)
 
 
 
