@@ -166,6 +166,25 @@ LATEX_CV_TEMPLATE = r"""
         
         """
 
+def _convert_numeric_strings(data: Any) -> Any:
+    """Convert numeric strings to actual numbers for LaTeX rendering."""
+    if isinstance(data, dict):
+        return {k: _convert_numeric_strings(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [_convert_numeric_strings(v) for v in data]
+    elif isinstance(data, str):
+        stripped = data.strip()
+        if not stripped:
+            return data
+        # Try to convert to int first, then float
+        try:
+            if '.' in stripped:
+                return float(stripped)
+            return int(stripped)
+        except ValueError:
+            return data
+    return data
+
 class LaTeXRenderer:
     def __init__(self):
         self.env = Environment(
@@ -186,4 +205,9 @@ class LaTeXRenderer:
     def render(self, data: GeneratedCV) -> str:
         raw_dict = data.model_dump()
         escaped_dict = escape_latex(raw_dict)
+        escaped_dict = self._convert_numeric_strings(escaped_dict)
         return self.template.render(cv=escaped_dict)
+
+    @staticmethod
+    def _convert_numeric_strings(data: Any) -> Any:
+        return _convert_numeric_strings(data)
