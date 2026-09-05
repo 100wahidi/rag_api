@@ -6,7 +6,7 @@
 
 ---
 
-# Latency-Engineered CV Generation & Retrieval Engine (`rag_api`)
+# Low Latency-Engineered CV Generation & Retrieval Engine (`rag_api`)
 
 A resilient, asynchronous REST platform built with **FastAPI**, **PostgreSQL (`pgvector`)**, **asyncpg**, and **LangChain**, designed for low-latency contextual retrieval, parsing, and deterministic LaTeX resume and cover-letter compilation.
 
