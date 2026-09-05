@@ -1,13 +1,10 @@
-![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=flat-square&logo=fastapi&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-pgvector-4169E1?style=flat-square&logo=postgresql&logoColor=white)
-![asyncpg](https://img.shields.io/badge/asyncpg-High--Throughput%20I%2FO-2C5E8A?style=flat-square)
-![Pydantic](https://img.shields.io/badge/Pydantic-V2-E92063?style=flat-square&logo=pydantic&logoColor=white)
-![LangChain](https://img.shields.io/badge/LangChain-LLM%20Orchestration-1C3C3C?style=flat-square)
-![PyTorch](https://img.shields.io/badge/PyTorch-SentenceTransformers-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
-![LaTeX](https://img.shields.io/badge/LaTeX-TeXLive%20Engine-008080?style=flat-square)
-![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat-square&logo=docker&logoColor=white)
-![Package Manager](https://img.shields.io/badge/Tooling-Astral%20uv-DE5FE9?style=flat-square)
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=py,fastapi,postgres,docker&theme=light" height="48" alt="Core Technologies" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg" height="46" width="46" alt="PyTorch" style="margin: 0 4px;" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/latex/latex-original.svg" height="46" width="46" alt="LaTeX" style="margin: 0 4px;" />
+  <img src="https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/vectors-and-icons/langchain-color-icon-t2s290z2uubfom3c61w6r.png/langchain-color-icon-q58u6m9i1p75440gcs6hbg.png?_a=DAJFJtWIZAAC" height="46" width="46" alt="LangChain" style="margin: 0 4px;" />
+  <img src="https://avatars.githubusercontent.com/u/115962809?s=200&v=4" height="46" width="46" alt="Astral uv" style="margin: 0 4px; border-radius: 8px;" />
+</p>
 
 ---
 
