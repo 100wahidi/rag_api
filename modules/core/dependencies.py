@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from fastapi import Request
 from typing import AsyncGenerator
 from fastapi import Request, HTTPException, status
-from modules.compiler.LatexCompiler import LatexCompiler
+from modules.generation.LatexCompiler import LatexCompiler
 
 
 def make_engine(db_url: str):

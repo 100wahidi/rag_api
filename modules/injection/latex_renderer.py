@@ -54,10 +54,10 @@ LATEX_CV_TEMPLATE = r"""
 
 % ================= HEADER =================
 \begin{center}
-    {\LARGE \textbf{\VAR{ cv.header.name }}}\\[0.3em]
+    {\LARGE \textbf{\VAR{ cv.header.name }}}\par\vspace{0.3em}
     \VAR{ cv.header.city } $\bullet$ \VAR{ cv.header.phone } $\bullet$ \href{mailto:\VAR{ cv.header.email }}{\VAR{ cv.header.email }}
     \BLOCK{ if cv.header.linkedin } $\bullet$ \href{\VAR{ cv.header.linkedin }}{LinkedIn}\BLOCK{ endif }
-    \BLOCK{ if cv.header.github } $\bullet$ \href{\VAR{ cv.header.github }}{GitHub}\BLOCK{ endif } \\[0.3em]
+    \BLOCK{ if cv.header.github } $\bullet$ \href{\VAR{ cv.header.github }}{GitHub}\BLOCK{ endif } \par\vspace{0.3em}
     \textbf{\Large \VAR{ cv.header.title }}
 \end{center}
 
@@ -76,7 +76,7 @@ LATEX_CV_TEMPLATE = r"""
 % ================= PROFESSIONAL EXPERIENCE =================
 \section*{Professional Experience}
 \BLOCK{ for exp in cv.experiences }
-\textbf{\VAR{ exp.company }} \hfill \textit{\VAR{ exp.start_date } -- \VAR{ exp.end_date }} \\
+	extbf{\VAR{ exp.company }} \hfill \textit{\VAR{ exp.start_date } -- \VAR{ exp.end_date }} \par
 \textit{\VAR{ exp.role }} \hfill \textit{\VAR{ exp.location }}
 \begin{itemize}
     \BLOCK{ for bullet in exp.bullets }
@@ -103,7 +103,7 @@ LATEX_CV_TEMPLATE = r"""
 % ================= EDUCATION =================
 \section*{Education}
 \BLOCK{ for edu in cv.education }
-\textbf{\VAR{ edu.degree }} \hfill \textit{\VAR{ edu.school }} \\
+	extbf{\VAR{ edu.degree }} \hfill \textit{\VAR{ edu.school }} \par
 \textit{Graduation: \VAR{ edu.graduation_year }}
 \BLOCK{ if edu.description } -- \VAR{ edu.description }\BLOCK{ endif }
 \vspace{0.15cm}
@@ -112,7 +112,7 @@ LATEX_CV_TEMPLATE = r"""
 % ================= LANGUAGES & LEADERSHIP =================
 \BLOCK{ if cv.languages or cv.leadership }
 \section*{Languages \& Additional}
-\BLOCK{ if cv.languages }\textbf{Languages:} \VAR{ cv.languages | join(', ') } \\ \BLOCK{ endif }
+\BLOCK{ if cv.languages }\textbf{Languages:} \VAR{ cv.languages | join(', ') } \par \BLOCK{ endif }
 \BLOCK{ if cv.leadership }\textbf{Leadership/Activities:} \VAR{ cv.leadership }\BLOCK{ endif }
 \BLOCK{ endif }
 

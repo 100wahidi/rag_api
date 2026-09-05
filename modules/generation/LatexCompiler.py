@@ -1,9 +1,7 @@
 import asyncio
-import os
 import re
 import tempfile
 from pathlib import Path
-from typing import Optional
 
 
 class LatexCompilationError(Exception):

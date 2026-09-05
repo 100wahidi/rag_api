@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from sentence_transformers import SentenceTransformer
 from modules.core.security import Settings
 from modules.core.llm import AsyncGroqProvider
-from modules.compiler.LatexCompiler import LatexCompiler
+from modules.generation.LatexCompiler import LatexCompiler
 from modules.core.logs import setup_logger
 from modules.core.dependencies import make_engine, make_sessionmaker
 from modules.authentication.router import router as auth_router
