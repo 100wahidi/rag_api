@@ -1,3 +1,16 @@
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=flat-square&logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-pgvector-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![asyncpg](https://img.shields.io/badge/asyncpg-High--Throughput%20I%2FO-2C5E8A?style=flat-square)
+![Pydantic](https://img.shields.io/badge/Pydantic-V2-E92063?style=flat-square&logo=pydantic&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain-LLM%20Orchestration-1C3C3C?style=flat-square)
+![PyTorch](https://img.shields.io/badge/PyTorch-SentenceTransformers-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
+![LaTeX](https://img.shields.io/badge/LaTeX-TeXLive%20Engine-008080?style=flat-square)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Package Manager](https://img.shields.io/badge/Tooling-Astral%20uv-DE5FE9?style=flat-square)
+
+---
+
 # Latency-Engineered CV Generation & Retrieval Engine (`rag_api`)
 
 A resilient, asynchronous REST platform built with **FastAPI**, **PostgreSQL (`pgvector`)**, **asyncpg**, and **LangChain**, designed for low-latency contextual retrieval, parsing, and deterministic LaTeX resume and cover-letter compilation.
