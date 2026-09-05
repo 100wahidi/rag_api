@@ -18,7 +18,7 @@ from modules.retrieving.router import router as retrieval_router
 from modules.generation.router import router as generation_router
 from modules.uploading.router import router as uploading_router
 from modules.injection.router import router as injection_router
-from modules.compiler import router as compiler_module
+from modules.compiler.router import router as compiler_router
 
 
 
@@ -58,13 +58,13 @@ async def lifespan(app: FastAPI):
     if not resolved_path:
         raise RuntimeError("FATAL: pdflatex binary not found in container runtime PATH.")
     
-    compiler_module.COMPILER_INSTANCE = LatexCompiler(binary_path=resolved_path)
+    app.state.latex_compiler = LatexCompiler(binary_path=resolved_path)
 
     yield
     # shutdown[end_event]: dispose engine, stop executor, close async clients and any other resources
     await engine.dispose()
     app.state.model_executor.shutdown(wait=True)
-    compiler_module.COMPILER_INSTANCE = None
+    app.state.latex_compiler = None
 
 
 
@@ -76,6 +76,13 @@ allow_credentials=True, # Allow credentials
 allow_methods=["*"], # Allow all HTTP methods
 allow_headers=["*"], # Allow all HTTP headers
 )
+
+
+@app.get("/health", include_in_schema=False)
+async def health_check():
+    if not hasattr(app.state, "embedding_model") or not hasattr(app.state, "latex_compiler"):
+        return {"status": "starting"}
+    return {"status": "healthy"}
 
 
 app.include_router(auth_router)

@@ -2,6 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import Response
 from pydantic import BaseModel, Field, field_validator
+from modules.core.dependencies import get_compiler_engine
 from modules.compiler.LatexCompiler import (
     LatexCompilationError,
     LatexCompiler,
@@ -10,19 +11,6 @@ from modules.compiler.LatexCompiler import (
 
 MAX_LATEX_PAYLOAD_SIZE = 512 * 1024  # 512 KB
 EXECUTION_TIMEOUT_SECONDS = 8.0
-
-# Singleton compiler engine reference
-COMPILER_INSTANCE: LatexCompiler | None = None
-
-
-def get_compiler() -> LatexCompiler:
-    if COMPILER_INSTANCE is None:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="LaTeX compilation engine is not initialized.",
-        )
-    return COMPILER_INSTANCE
-
 
 class LatexCompileRequest(BaseModel):
     latex_source: str = Field(
@@ -57,7 +45,7 @@ router = APIRouter(prefix="/v1/cv", tags=["CV Compiler"])
 )
 async def compile_latex_to_pdf(
     payload: LatexCompileRequest,
-    compiler: Annotated[LatexCompiler, Depends(get_compiler)],
+    compiler: Annotated[LatexCompiler, Depends(get_compiler_engine)],
 ):
     try:
         pdf_bytes = await compiler.compile(
